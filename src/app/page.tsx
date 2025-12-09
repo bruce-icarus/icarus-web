@@ -287,7 +287,7 @@ export default function Home() {
                         </span>
                         <div className="flex flex-wrap gap-3">
                             {[
-                                "Defense tech",
+                                "Defence tech",
                                 "Energy",
                                 "Fintech",
                                 "GovTech",
