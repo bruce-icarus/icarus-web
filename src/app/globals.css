@@ -3,25 +3,47 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background: 225 45% 3%;
+  --foreground: 210 14% 96%;
+  --muted: 222 28% 12%;
+  --muted-foreground: 215 13% 68%;
+  --popover: 225 45% 4%;
+  --popover-foreground: 210 14% 96%;
+  --card: 223 38% 6%;
+  --card-foreground: 210 14% 96%;
+  --border: 222 24% 18%;
+  --input: 222 24% 18%;
+  --primary: 217 88% 62%;
+  --primary-foreground: 210 33% 12%;
+  --secondary: 190 79% 52%;
+  --secondary-foreground: 216 35% 12%;
+  --accent: 200 80% 52%;
+  --accent-foreground: 215 33% 12%;
+  --destructive: 0 80% 56%;
+  --destructive-foreground: 210 14% 96%;
+  --ring: 216 90% 70%;
+  --radius: 12px;
+  --font-sans: 'Inter', 'Suisse Intl', 'SF Pro Display', 'Segoe UI', system-ui,
+    -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@layer base {
+  * {
+    @apply border-border;
   }
-}
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen;
+    font-feature-settings: 'ss01' on, 'cv02' on, 'cv11' on;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.12), transparent 35%),
+      radial-gradient(circle at 80% 0%, rgba(45, 212, 191, 0.14), transparent 30%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
+      radial-gradient(circle at 50% 120%, rgba(59, 130, 246, 0.18), transparent 45%);
+    background-attachment: fixed;
+  }
 }
