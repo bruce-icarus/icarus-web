@@ -3,11 +3,11 @@ import {
     ArrowUpRight,
     BarChart3,
     CircuitBoard,
-    Radar,
     ShieldCheck,
     Sparkles,
     Workflow,
 } from "lucide-react";
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import IcarusLogo from "./Icarus300.png";
 
 const signals = [
     { label: "Platform uptime", value: "99.982%", delta: "+0.21%" },
@@ -28,53 +29,53 @@ const signals = [
 
 const pillars = [
     {
-        title: "Critical systems engineering",
-        copy: "We architect resilient platforms, modernize legacy estates, and ship mission-grade software with safety nets.",
+        title: "Platform foundations",
+        copy: "Resilient cloud stacks with sane defaults and safety nets.",
         icon: ShieldCheck,
-        tags: ["Platform strategy", "Quality gates", "SRE readiness"],
+        tags: ["Architecture", "Quality gates", "SRE"],
     },
     {
-        title: "Velocity without fragility",
-        copy: "Product engineering pods that pair with your teams to accelerate delivery without creating drift or tech debt.",
+        title: "Product delivery",
+        copy: "Embedded pods that ship features fast without creating drag.",
         icon: Sparkles,
-        tags: ["Product squads", "Design systems", "Accelerators"],
+        tags: ["Delivery pods", "Design systems", "Accelerators"],
     },
     {
-        title: "Data-shaped decisioning",
-        copy: "Telemetry, observability, and operating dashboards that keep leadership close to the truth in real time.",
+        title: "Data clarity",
+        copy: "Instrumentation and dashboards that keep leaders close to the truth.",
         icon: BarChart3,
-        tags: ["Observability", "Control planes", "Exec reporting"],
+        tags: ["Observability", "Control planes", "Reporting"],
     },
 ];
 
 const capabilities = [
-    "Cloud-native platforms (AWS/GCP/Azure)",
-    "Microservice and API ecosystems",
-    "AI-assisted workflows & copilots",
-    "Event-driven architectures",
-    "Data platforms & stream processing",
-    "Design systems & UX modernisation",
-    "Security & compliance automation",
-    "DevEx and developer platform strategy",
-    "SRE playbooks & incident response",
+    "Cloud platforms on AWS/GCP/Azure",
+    "Service meshes and APIs",
+    "AI-assisted workflows",
+    "Event-driven systems",
+    "Data pipelines and streams",
+    "Design systems",
+    "Security and compliance automation",
+    "Developer platforms",
+    "SRE playbooks",
 ];
 
 const playbooks = [
     {
         title: "Discover & model",
-        detail: "Topology mapping, threat modelling, and ROI modeling to align the program with measurable outcomes.",
+        detail: "Map the system, risks, and success measures before we commit.",
     },
     {
         title: "Design & de-risk",
-        detail: "Reference architectures, thin-slice pilots, and safety nets to validate the path before scaling.",
+        detail: "Reference builds and thin slices to prove the path early.",
     },
     {
         title: "Build & integrate",
-        detail: "Embedded delivery pods that ship features, integrate with your stack, and transfer patterns to your teams.",
+        detail: "Embedded delivery that ships features and hardens the stack.",
     },
     {
         title: "Operate & evolve",
-        detail: "Observability, runbooks, and capability uplift that keeps systems healthy long after launch.",
+        detail: "Telemetry, runbooks, and handover so teams can run it well.",
     },
 ];
 
@@ -82,17 +83,17 @@ const caseStudies = [
     {
         sector: "Aerospace systems",
         result: "43% faster simulation cycles",
-        detail: "Rebuilt modelling pipelines, added deterministic test harnesses, and integrated telemetry into mission control.",
+        detail: "Rebuilt pipelines with deterministic tests and live telemetry.",
     },
     {
         sector: "Fintech infrastructure",
         result: "Zero-downtime migration",
-        detail: "Re-architected payment rails onto a service mesh with progressive delivery and automated rollback.",
+        detail: "Shifted payment rails onto a mesh with progressive delivery.",
     },
     {
         sector: "Energy intelligence",
         result: "Unified situational awareness",
-        detail: "Shipped a data platform with live geospatial signals, anomaly detection, and resilient edge ingestion.",
+        detail: "Data platform with live signals, anomaly detection, and edge ingest.",
     },
 ];
 
@@ -106,8 +107,13 @@ export default function Home() {
             <div className="relative z-10">
                 <header className="container flex flex-col gap-6 pb-6 pt-10 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-background shadow-lg ring-1 ring-white/10">
-                            <Radar className="h-5 w-5" />
+                        <div className="flex h-11 w-11 overflow-hidden rounded-xl shadow-lg ring-1 ring-white/10">
+                            <Image
+                                src={IcarusLogo}
+                                alt="Icarus Technologies logo"
+                                className="h-full w-full object-cover"
+                                priority
+                            />
                         </div>
                         <div>
                             <p className="text-sm uppercase tracking-[0.12em] text-muted-foreground">
@@ -153,7 +159,7 @@ export default function Home() {
                             Our approach
                         </Button>
                         <Button size="sm">
-                            Book a strategy call
+                            Book a call
                             <ArrowUpRight className="h-4 w-4" />
                         </Button>
                     </nav>
@@ -166,28 +172,22 @@ export default function Home() {
                             className="inline-flex items-center gap-2"
                         >
                             <span className="h-2 w-2 rounded-full bg-secondary shadow-[0_0_0_6px_rgba(94,234,212,0.15)]" />
-                            Operating layer for ambitious teams
+                            Systems partner for critical teams
                         </Badge>
                         <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
-                            Engineering teams that build {` `}
-                            <span className="text-primary">
-                                secure, scalable
-                            </span>{" "}
-                            software with seeeerious rigor.
+                            Secure, scalable software shipped with discipline.
                         </h1>
                         <p className="max-w-2xl text-lg text-muted-foreground">
-                            Icarus Technologies is a boutique consultancy that
-                            embeds with your leaders, architects platforms, and
-                            ships production software—without compromising pace
-                            or reliability.
+                            Principals who embed with your team, design the
+                            platform, and deliver production code without drama.
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Button size="lg">
-                                Book a strategy call
+                                Book a call
                                 <ArrowRight className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="lg">
-                                Download capabilities deck
+                                View work
                             </Button>
                         </div>
                         <div className="grid gap-4 sm:grid-cols-3">
@@ -312,13 +312,12 @@ export default function Home() {
                     <div className="md:col-span-1">
                         <Badge variant="muted">Services</Badge>
                         <h2 className="mt-4 text-3xl font-semibold">
-                            Precision-crafted software programs.
+                            Critical software, delivered with focus.
                         </h2>
                         <p className="mt-3 text-muted-foreground">
-                            We build platforms, modernize stacks, and ship
-                            products that stay reliable under pressure. Every
-                            engagement is led by principals who have operated at
-                            scale.
+                            We build platforms, refresh stacks, and ship
+                            products that stay reliable under pressure—always
+                            led by principals.
                         </p>
                     </div>
                     <div className="md:col-span-2 grid gap-4">
@@ -366,14 +365,11 @@ export default function Home() {
                     <div className="space-y-4">
                         <Badge variant="muted">Capabilities</Badge>
                         <h2 className="text-3xl font-semibold">
-                            Operators who design, ship, and run production
-                            systems.
+                            Operators who design, ship, and run systems.
                         </h2>
                         <p className="text-muted-foreground">
-                            From strategy to code, we bring the toolkit of
-                            platform companies: interoperable services, ruthless
-                            observability, and experience leading teams through
-                            complex deliveries.
+                            Strategy through code with interoperable services
+                            and clear telemetry.
                         </p>
                         <div className="rounded-2xl border border-border/60 bg-card/80 p-5 shadow-inner">
                             <div className="flex items-start gap-3 text-sm">
@@ -419,9 +415,7 @@ export default function Home() {
                             A clear path from idea to impact.
                         </h2>
                         <p className="text-muted-foreground">
-                            We stay close to your leadership, use lightweight
-                            governance, and publish telemetry so you can see
-                            value land every week.
+                            Light governance, visible progress, and no surprises.
                         </p>
                     </div>
                     <div className="grid gap-4 md:grid-cols-2">
@@ -456,9 +450,8 @@ export default function Home() {
                             Outcomes we deliver.
                         </h2>
                         <p className="text-muted-foreground">
-                            Every story pairs delivery with observable impact.
-                            We stay until the new capabilities are running in
-                            production.
+                            Delivery paired with observable impact. We stay
+                            until the capability is live.
                         </p>
                     </div>
                     <div className="grid gap-4">
@@ -486,19 +479,17 @@ export default function Home() {
                     </div>
                 </section>
 
-                <section className="container pb-24">
+                <section id="contact" className="container pb-24">
                     <div className="flex flex-col gap-8 rounded-2xl border border-border/60 bg-gradient-to-r from-primary/20 via-card to-card/90 p-10 shadow-lg md:flex-row md:items-center md:justify-between">
                         <div className="space-y-3">
                             <Badge variant="muted">Let&apos;s talk</Badge>
                             <h3 className="text-3xl font-semibold">
-                                Bring Icarus Technologies onto your next
-                                mission.
+                                Bring Icarus onto your next release.
                             </h3>
                             <p className="max-w-2xl text-muted-foreground">
-                                Show us your roadmap, your constraints, or your
-                                biggest risks. We will return with an executable
-                                plan and a delivery pod ready to start in
-                                weeks—not months.
+                                Show us the roadmap and constraints. We will
+                                return with a plan and a delivery pod ready to
+                                start.
                             </p>
                             <div className="flex flex-wrap gap-3">
                                 <Badge
