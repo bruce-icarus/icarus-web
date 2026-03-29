@@ -2,9 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Icarus Technologies | Software Consultancy',
-  description:
-    'Systems consultants crafting secure, resilient software for teams that build critical products.',
+  title: 'Icarus Technologies',
+  description: 'We build mission-critical software.',
 }
 
 export default function RootLayout({
