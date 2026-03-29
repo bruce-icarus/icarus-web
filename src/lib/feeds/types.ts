@@ -6,7 +6,7 @@ export interface FeedEvent {
   lat: number
   lng: number
   severity: 'critical' | 'high' | 'moderate' | 'low'
-  category: 'conflict' | 'fire' | 'seismic' | 'aircraft' | 'weather'
+  category: 'conflict' | 'fire' | 'seismic' | 'aircraft' | 'weather' | 'maritime'
   source_url: string | null
   metadata: Record<string, unknown>
   event_time: string // ISO 8601

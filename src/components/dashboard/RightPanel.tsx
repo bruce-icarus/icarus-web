@@ -11,6 +11,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   seismic: 'text-yellow-400 border-yellow-400/30 bg-yellow-400/10',
   aircraft: 'text-blue-400 border-blue-400/30 bg-blue-400/10',
   weather: 'text-teal-400 border-teal-400/30 bg-teal-400/10',
+  maritime: 'text-violet-400 border-violet-400/30 bg-violet-400/10',
 }
 
 function timeAgo(dateStr: string): string {

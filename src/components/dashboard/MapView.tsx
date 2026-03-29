@@ -13,6 +13,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   seismic: '#eab308',
   aircraft: '#3b82f6',
   weather: '#14b8a6',
+  maritime: '#8b5cf6',
 }
 
 const SEVERITY_RADIUS: Record<string, number> = {
@@ -76,13 +77,24 @@ export function MapView({ events, activeFeeds, onSelectEvent }: MapViewProps) {
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: STADIA_STYLE,
-      center: [20, 30], // Center on Middle East / Mediterranean
-      zoom: 2.5,
-      attributionControl: false,
-    })
+    let map: maplibregl.Map
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style: STADIA_STYLE,
+        center: [20, 30], // Center on Middle East / Mediterranean
+        zoom: 2.5,
+        attributionControl: false,
+      })
+    } catch (e) {
+      // WebGL not available (headless browsers, very old devices)
+      console.warn('MapLibre failed to initialize:', e)
+      if (containerRef.current) {
+        containerRef.current.innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;font-size:14px;">Map requires WebGL support</div>'
+      }
+      return
+    }
 
     map.addControl(
       new maplibregl.AttributionControl({ compact: true }),

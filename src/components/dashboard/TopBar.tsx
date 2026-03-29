@@ -11,6 +11,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   seismic: '#eab308',
   aircraft: '#3b82f6',
   weather: '#14b8a6',
+  maritime: '#8b5cf6',
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -19,6 +20,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   seismic: 'Seismic',
   aircraft: 'Aircraft',
   weather: 'Weather',
+  maritime: 'Maritime',
 }
 
 interface TopBarProps {
