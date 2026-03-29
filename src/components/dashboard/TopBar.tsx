@@ -115,8 +115,16 @@ export function TopBar({ events, activeFeeds, onToggleFeed }: TopBarProps) {
         })}
       </div>
 
-      {/* Right: Clock */}
-      <UTCClock />
+      {/* Right: Nav + Clock */}
+      <div className="flex items-center gap-3">
+        <a
+          href="/situation/london"
+          className="hidden text-[11px] text-muted-foreground hover:text-foreground transition sm:block"
+        >
+          London CCTV →
+        </a>
+        <UTCClock />
+      </div>
     </header>
   )
 }
