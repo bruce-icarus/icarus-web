@@ -1,99 +1,134 @@
 import type { FeedAdapter, FeedEvent } from './types'
-import { normalizeSeverity } from './severity'
 
-// GDELT Event Database API
-// Docs: https://blog.gdeltproject.org/gdelt-2-0-our-global-world-in-realtime/
-// Returns recent events in article list format
-const GDELT_URL =
-  'https://api.gdeltproject.org/api/v2/events/events?query=&mode=artlist&maxrecords=250&format=json&timespan=60min'
+// Global Disaster Alert and Coordination System (GDACS)
+// Replaces GDELT (which is unreliable). GDACS is run by the EU/UN.
+// Returns earthquakes, tropical cyclones, floods, volcanoes, droughts, wildfires
+// Free, no API key, GeoJSON format.
+const GDACS_URL =
+  'https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH'
 
-interface GDELTArticle {
-  url: string
-  title: string
-  seendate: string
-  socialimage: string
-  domain: string
-  language: string
-  sourcecountry: string
+interface GDACSProperties {
+  eventtype: string   // EQ, TC, FL, VO, DR, WF
+  name: string
+  alertlevel: string  // Green, Orange, Red
+  alertscore: number
+  episodealertlevel: string
+  country: string
+  fromdate: string
+  todate: string
+  url: { report: string }
 }
 
-interface GDELTEvent {
-  GlobalEventID: string
-  ActionGeo_Lat: number | null
-  ActionGeo_Long: number | null
-  GoldsteinScale: number
-  Actor1Name: string | null
-  Actor2Name: string | null
-  EventCode: string
-  NumArticles: number
-  DateAdded: string
-  SourceURL: string
+interface GDACSFeature {
+  type: 'Feature'
+  geometry: {
+    type: 'Point'
+    coordinates: [number, number]  // [lng, lat]
+  }
+  properties: GDACSProperties
 }
 
-interface GDELTResponse {
-  articles?: GDELTArticle[]
-  events?: GDELTEvent[]
+interface GDACSResponse {
+  type: 'FeatureCollection'
+  features: GDACSFeature[]
+}
+
+const EVENT_NAMES: Record<string, string> = {
+  EQ: 'Earthquake',
+  TC: 'Tropical Cyclone',
+  FL: 'Flood',
+  VO: 'Volcano',
+  DR: 'Drought',
+  WF: 'Wildfire',
+}
+
+function alertToSeverity(alert: string): 'critical' | 'high' | 'moderate' | 'low' {
+  switch (alert) {
+    case 'Red': return 'critical'
+    case 'Orange': return 'high'
+    case 'Green': return 'moderate'
+    default: return 'low'
+  }
+}
+
+// Map GDACS event types to our categories
+function eventTypeToCategory(type: string): 'conflict' | 'fire' | 'seismic' | 'weather' {
+  switch (type) {
+    case 'EQ': return 'seismic'
+    case 'VO': return 'seismic'
+    case 'WF': return 'fire'
+    case 'TC': return 'weather'
+    case 'FL': return 'weather'
+    case 'DR': return 'weather'
+    default: return 'conflict'
+  }
 }
 
 export const gdeltAdapter: FeedAdapter = {
-  name: 'gdelt',
-  pollIntervalSeconds: 900, // 15 minutes
+  name: 'gdelt', // Keep the name for backward compat with feed_state
+  pollIntervalSeconds: 900,
 
   async fetch(): Promise<FeedEvent[]> {
+    const toDate = new Date().toISOString().split('T')[0]
+    const fromDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+    const params = new URLSearchParams({
+      eventlist: 'EQ,TC,FL,VO,DR,WF',
+      fromDate,
+      toDate,
+      alertlevel: 'Green;Orange;Red',
+    })
+
     const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 10_000)
+    const timeout = setTimeout(() => controller.abort(), 15_000)
 
     try {
-      const res = await fetch(GDELT_URL, {
+      const res = await fetch(`${GDACS_URL}?${params}`, {
         headers: { Accept: 'application/json' },
         signal: controller.signal,
         next: { revalidate: 0 },
       })
 
       if (!res.ok) {
-        throw new Error(`GDELT API returned ${res.status}: ${res.statusText}`)
+        throw new Error(`GDACS API returned ${res.status}: ${res.statusText}`)
       }
 
-      const data: GDELTResponse = await res.json()
+      const data: GDACSResponse = await res.json()
 
-      if (!data.events || !Array.isArray(data.events)) {
+      if (!data.features || data.features.length === 0) {
         return []
       }
 
-      return data.events
-        .filter(
-          (e) =>
-            e.ActionGeo_Lat != null &&
-            e.ActionGeo_Long != null &&
-            !isNaN(e.ActionGeo_Lat) &&
-            !isNaN(e.ActionGeo_Long)
-        )
-        .map((e) => ({
-          feed: 'gdelt',
-          source_id: String(e.GlobalEventID),
-          title: [e.Actor1Name, e.Actor2Name].filter(Boolean).join(' — ') || `Event ${e.EventCode}`,
-          body: `GDELT Event ${e.EventCode} (Goldstein ${e.GoldsteinScale})`,
-          lat: e.ActionGeo_Lat!,
-          lng: e.ActionGeo_Long!,
-          severity: normalizeSeverity('gdelt', e.GoldsteinScale),
-          category: 'conflict' as const,
-          source_url: e.SourceURL || null,
-          metadata: {
-            goldsteinScale: e.GoldsteinScale,
-            eventCode: e.EventCode,
-            numArticles: e.NumArticles,
-            actor1: e.Actor1Name,
-            actor2: e.Actor2Name,
-          },
-          event_time: e.DateAdded
-            ? new Date(
-                e.DateAdded.replace(
-                  /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/,
-                  '$1-$2-$3T$4:$5:$6Z'
-                )
-              ).toISOString()
-            : new Date().toISOString(),
-        }))
+      return data.features
+        .filter((f) => f.geometry?.coordinates?.length === 2)
+        .map((f) => {
+          const p = f.properties
+          const typeName = EVENT_NAMES[p.eventtype] || p.eventtype
+
+          return {
+            feed: 'gdelt',
+            source_id: `gdacs-${p.eventtype}-${f.geometry.coordinates.join(',')}`,
+            title: p.name || `${typeName} in ${p.country || 'Unknown'}`,
+            body: `${typeName} | Alert: ${p.alertlevel} | ${p.country || ''}`,
+            lat: f.geometry.coordinates[1],
+            lng: f.geometry.coordinates[0],
+            severity: alertToSeverity(p.alertlevel),
+            category: eventTypeToCategory(p.eventtype),
+            source_url: typeof p.url === 'object' ? p.url.report : null,
+            metadata: {
+              event_type: p.eventtype,
+              event_type_name: typeName,
+              alert_level: p.alertlevel,
+              alert_score: p.alertscore,
+              country: p.country,
+              from_date: p.fromdate,
+              to_date: p.todate,
+            },
+            event_time: p.fromdate
+              ? new Date(p.fromdate).toISOString()
+              : new Date().toISOString(),
+          }
+        })
     } finally {
       clearTimeout(timeout)
     }

@@ -33,10 +33,19 @@ export const openskyAdapter: FeedAdapter = {
       lomax: '60',   // East
     })
 
-    const res = await fetch(`${OPENSKY_URL}?${params}`, {
-      headers: { Accept: 'application/json' },
-      next: { revalidate: 0 },
-    })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 15_000)
+
+    let res: Response
+    try {
+      res = await fetch(`${OPENSKY_URL}?${params}`, {
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+        next: { revalidate: 0 },
+      })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     if (!res.ok) {
       throw new Error(`OpenSky API returned ${res.status}: ${res.statusText}`)
