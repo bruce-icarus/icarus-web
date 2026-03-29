@@ -27,3 +27,17 @@ export function normalizeSeverity(feed: string, rawValue: number): Severity {
       return 'low'
   }
 }
+
+// NWS uses text severity levels rather than numeric values
+export function mapNWSSeverity(nwsSeverity: string): Severity {
+  switch (nwsSeverity) {
+    case 'Extreme':
+      return 'critical'
+    case 'Severe':
+      return 'high'
+    case 'Moderate':
+      return 'moderate'
+    default:
+      return 'low'
+  }
+}

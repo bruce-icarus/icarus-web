@@ -72,10 +72,10 @@ export function TopBar({ events, activeFeeds, onToggleFeed }: TopBarProps) {
         </div>
         <div className="hidden sm:block">
           <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            Icarus Deck
+            Icarus Dashboard
           </span>
           <span className="ml-2 text-[10px] text-muted-foreground/60">
-            OSINT situation awareness
+            Monitor the situation
           </span>
         </div>
       </div>
