@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Video, Camera, MapPin } from 'lucide-react'
+import { CTAToast } from '@/components/dashboard/CTAToast'
 
 const LondonMap = dynamic(
   () => import('@/components/dashboard/LondonMap').then((m) => m.LondonMap),
@@ -210,6 +211,8 @@ export default function LondonCCTV() {
           )}
         </AnimatePresence>
       </div>
+
+      <CTAToast />
     </div>
   )
 }

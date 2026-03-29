@@ -13,7 +13,9 @@ const MapView = dynamic(
   { ssr: false }
 )
 
-const DEFAULT_FEEDS = new Set(['conflict', 'fire', 'seismic', 'aircraft', 'weather'])
+import { CTAToast } from '@/components/dashboard/CTAToast'
+
+const DEFAULT_FEEDS = new Set(['conflict', 'fire', 'seismic', 'aircraft', 'weather', 'maritime'])
 
 export default function SituationDashboard() {
   const { events, loading } = useEvents()
@@ -65,6 +67,8 @@ export default function SituationDashboard() {
 
         <RightPanel event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       </div>
+
+      <CTAToast />
     </div>
   )
 }

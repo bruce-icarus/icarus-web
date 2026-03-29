@@ -41,7 +41,7 @@ export default function Home() {
           </Button>
           <Button variant="outline" size="lg" asChild>
             <a
-              href="https://cal.com"
+              href="https://cal.com/bruce-williams-icarus/15min"
               target="_blank"
               rel="noopener noreferrer"
             >
