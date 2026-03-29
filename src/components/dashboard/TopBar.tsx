@@ -119,7 +119,7 @@ export function TopBar({ events, activeFeeds, onToggleFeed }: TopBarProps) {
       <div className="flex items-center gap-3">
         <a
           href="/situation/london"
-          className="hidden text-[11px] text-muted-foreground hover:text-foreground transition sm:block"
+          className="hidden rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground transition hover:bg-primary/80 sm:block"
         >
           London CCTV →
         </a>
