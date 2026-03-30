@@ -6,10 +6,7 @@ import IcarusLogo from './Icarus300.png'
 
 export default function Home() {
   // In production, link to situation subdomain. In dev, link to /situation path.
-  const dashboardUrl =
-    process.env.NODE_ENV === 'production'
-      ? 'https://situation.icarustechnologies.co.uk'
-      : '/situation'
+  const dashboardUrl = '/situation'
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-6">
@@ -51,7 +48,7 @@ export default function Home() {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          contact@icarustechnologies.co.uk
+          bruce@icarustechnologies.co.uk
         </p>
       </div>
     </main>

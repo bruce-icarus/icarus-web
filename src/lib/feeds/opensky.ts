@@ -24,13 +24,12 @@ export const openskyAdapter: FeedAdapter = {
   pollIntervalSeconds: 900, // 15 minutes
 
   async fetch(): Promise<FeedEvent[]> {
-    // Fetch a bounded region to limit data volume
-    // Default: Europe + Middle East + North Africa (the "interesting" region for a demo)
+    // Bounded to UK + Western Europe to keep response fast
     const params = new URLSearchParams({
-      lamin: '10',   // South
-      lamax: '65',   // North
-      lomin: '-30',  // West
-      lomax: '60',   // East
+      lamin: '45',   // South (southern France)
+      lamax: '60',   // North (Scotland)
+      lomin: '-12',  // West (Ireland)
+      lomax: '15',   // East (Germany)
     })
 
     const controller = new AbortController()
