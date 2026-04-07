@@ -75,9 +75,10 @@ export default function LondonCCTV() {
           </div>
           <a
             href="/situation"
-            className="text-[11px] text-muted-foreground hover:text-foreground transition"
+            className="rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground transition hover:bg-primary/80"
           >
-            ← Global Monitor
+            <span className="hidden sm:inline">← Global Monitor</span>
+            <span className="sm:hidden">Global</span>
           </a>
         </div>
       </header>

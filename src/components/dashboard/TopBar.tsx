@@ -119,9 +119,10 @@ export function TopBar({ events, activeFeeds, onToggleFeed }: TopBarProps) {
       <div className="flex items-center gap-3">
         <a
           href="/situation/london"
-          className="hidden rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground transition hover:bg-primary/80 sm:block"
+          className="rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground transition hover:bg-primary/80"
         >
-          London CCTV →
+          <span className="hidden sm:inline">London CCTV →</span>
+          <span className="sm:hidden">CCTV</span>
         </a>
         <UTCClock />
       </div>

@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
               metadata: e.metadata,
               event_time: e.event_time,
             })),
-            { onConflict: 'feed,source_id', ignoreDuplicates: true }
+            { onConflict: 'feed,source_id', ignoreDuplicates: false }
           )
 
         if (upsertError) throw upsertError

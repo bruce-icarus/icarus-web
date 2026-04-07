@@ -47,6 +47,15 @@ export default function Home() {
           </Button>
         </div>
 
+        <Button size="sm" variant='outline'>
+            <a
+                href="/team"
+                className="text-xs text-muted-foreground transition hover:text-foreground"
+              >
+                  Meet the team &rarr;
+            </a>
+        </Button>
+
         <p className="text-xs text-muted-foreground">
           bruce@icarustechnologies.co.uk
         </p>

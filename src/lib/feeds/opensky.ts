@@ -1,22 +1,30 @@
 import type { FeedAdapter, FeedEvent } from './types'
 
-// OpenSky Network REST API — anonymous access
-// Docs: https://openskynetwork.github.io/opensky-api/rest.html
-// Returns all aircraft state vectors currently tracked
-// Anonymous: 400 credits/day, 10s resolution
-const OPENSKY_URL = 'https://opensky-network.org/api/states/all'
+// ADSB.lol — free, open ADS-B aggregator, no auth required
+// Docs: https://api.adsb.lol
+const ADSB_REGIONS = [
+  'https://api.adsb.lol/v2/lat/52.5/lon/2/dist/500',    // UK + Western Europe
+  'https://api.adsb.lol/v2/lat/28/lon/47/dist/500',      // Middle East
+]
 
-interface OpenSkyState {
-  // [icao24, callsign, origin_country, time_position, last_contact,
-  //  longitude, latitude, baro_altitude, on_ground, velocity,
-  //  true_track, vertical_rate, sensors, geo_altitude, squawk,
-  //  spi, position_source]
-  [index: number]: string | number | boolean | null
+interface ADSBAircraft {
+  hex: string        // ICAO24 hex code
+  flight?: string    // Callsign
+  lat?: number
+  lon?: number
+  alt_baro?: number | 'ground'
+  gs?: number        // Ground speed (knots)
+  track?: number     // Track/heading (degrees)
+  category?: string
+  t?: string         // Aircraft type
+  r?: string         // Registration
+  dbFlags?: number
 }
 
-interface OpenSkyResponse {
-  time: number
-  states: OpenSkyState[] | null
+interface ADSBResponse {
+  ac: ADSBAircraft[] | null
+  now: number
+  total: number
 }
 
 export const openskyAdapter: FeedAdapter = {
@@ -24,79 +32,86 @@ export const openskyAdapter: FeedAdapter = {
   pollIntervalSeconds: 900, // 15 minutes
 
   async fetch(): Promise<FeedEvent[]> {
-    // Bounded to UK + Western Europe to keep response fast
-    const params = new URLSearchParams({
-      lamin: '45',   // South (southern France)
-      lamax: '60',   // North (Scotland)
-      lomin: '-12',  // West (Ireland)
-      lomax: '15',   // East (Germany)
-    })
-
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 15_000)
 
-    let res: Response
-    try {
-      res = await fetch(`${OPENSKY_URL}?${params}`, {
-        headers: { Accept: 'application/json' },
-        signal: controller.signal,
-        next: { revalidate: 0 },
+    // Fetch all regions in parallel
+    const results = await Promise.all(
+      ADSB_REGIONS.map(async (url) => {
+        try {
+          const res = await fetch(url, {
+            headers: { Accept: 'application/json' },
+            signal: controller.signal,
+          })
+          if (!res.ok) return null
+          return res.json() as Promise<ADSBResponse>
+        } catch {
+          return null
+        }
       })
-    } finally {
-      clearTimeout(timeout)
+    )
+    clearTimeout(timeout)
+
+    // Merge aircraft from all regions, dedup by hex
+    const seen = new Set<string>()
+    const allAircraft: ADSBAircraft[] = []
+    let now = Date.now()
+
+    for (const data of results) {
+      if (!data?.ac) continue
+      if (data.now) now = data.now
+      for (const a of data.ac) {
+        if (a.hex && !seen.has(a.hex)) {
+          seen.add(a.hex)
+          allAircraft.push(a)
+        }
+      }
     }
 
-    if (!res.ok) {
-      throw new Error(`OpenSky API returned ${res.status}: ${res.statusText}`)
-    }
-
-    const data: OpenSkyResponse = await res.json()
-
-    if (!data.states || data.states.length === 0) {
+    if (allAircraft.length === 0) {
       return []
     }
 
-    // Sample: take every Nth aircraft to keep marker count reasonable (~200 max)
-    const sampleRate = Math.max(1, Math.floor(data.states.length / 200))
+    // Filter to airborne aircraft with valid positions
+    const airborne = allAircraft.filter(
+      (a) => a.lat != null && a.lon != null && a.alt_baro !== 'ground'
+    )
 
-    return data.states
+    // Sample to keep marker count reasonable (~200 max)
+    const sampleRate = Math.max(1, Math.floor(airborne.length / 200))
+
+    return airborne
       .filter((_, i) => i % sampleRate === 0)
-      .filter((s) => s[6] !== null && s[5] !== null) // Must have lat/lng
-      .map((s) => {
-        const icao24 = String(s[0]).trim()
-        const callsign = s[1] ? String(s[1]).trim() : icao24
-        const originCountry = String(s[2] || 'Unknown')
-        const lat = Number(s[6])
-        const lng = Number(s[5])
-        const altitude = s[7] !== null ? Number(s[7]) : null
-        const velocity = s[9] !== null ? Number(s[9]) : null
-        const heading = s[10] !== null ? Number(s[10]) : null
-        const onGround = Boolean(s[8])
+      .map((a) => {
+        const icao24 = a.hex.trim().toLowerCase()
+        const callsign = a.flight?.trim() || a.r || icao24.toUpperCase()
+        const altitude = typeof a.alt_baro === 'number' ? Math.round(a.alt_baro * 0.3048) : null // ft → m
+        const speedKnots = a.gs ?? null
+        const speedKmh = speedKnots ? Math.round(speedKnots * 1.852) : null
 
         return {
           feed: 'opensky',
-          source_id: `opensky-${icao24}-${data.time}`,
-          title: `${callsign} (${originCountry})`,
-          body: onGround
-            ? 'On ground'
-            : altitude
-              ? `Alt: ${Math.round(altitude)}m, Speed: ${velocity ? Math.round(velocity * 3.6) + 'km/h' : 'N/A'}`
-              : null,
-          lat,
-          lng,
+          source_id: `opensky-${icao24}`,
+          title: callsign,
+          body: altitude
+            ? `Alt: ${altitude}m${speedKmh ? `, Speed: ${speedKmh}km/h` : ''}`
+            : null,
+          lat: a.lat!,
+          lng: a.lon!,
           severity: 'low' as const,
           category: 'aircraft' as const,
-          source_url: `https://opensky-network.org/aircraft-profile?icao24=${icao24}`,
+          source_url: `https://globe.adsb.fi/?icao=${icao24}`,
           metadata: {
             icao24,
             callsign,
-            origin_country: originCountry,
             altitude_m: altitude,
-            velocity_ms: velocity,
-            heading,
-            on_ground: onGround,
+            velocity_ms: speedKnots ? speedKnots * 0.5144 : null,
+            heading: a.track ?? 0,
+            on_ground: false,
+            type: a.t || null,
+            registration: a.r || null,
           },
-          event_time: new Date(data.time * 1000).toISOString(),
+          event_time: new Date(now).toISOString(),
         }
       })
   },
