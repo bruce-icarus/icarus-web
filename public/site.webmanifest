@@ -1,0 +1,27 @@
+{
+  "name": "Icarus Technologies",
+  "short_name": "Icarus",
+  "description": "We build mission-critical software.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#03070f",
+  "theme_color": "#032356",
+  "icons": [
+    {
+      "src": "/brand/icarus-figure-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/brand/icarus-figure-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/brand/icarus-figure-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

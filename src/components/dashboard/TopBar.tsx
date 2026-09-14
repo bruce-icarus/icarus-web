@@ -61,15 +61,19 @@ export function TopBar({ events, activeFeeds, onToggleFeed }: TopBarProps) {
     <header className="flex h-12 items-center justify-between border-b border-border/40 bg-[rgba(10,15,26,0.9)] px-4 backdrop-blur-xl">
       {/* Left: Logo + wordmark */}
       <div className="flex items-center gap-2.5">
-        <div className="flex h-7 w-7 overflow-hidden rounded-lg ring-1 ring-white/10">
+        <a
+          href="/"
+          aria-label="Icarus Technologies"
+          className="flex h-7 w-7 overflow-hidden rounded-lg ring-1 ring-white/10 transition-opacity hover:opacity-80"
+        >
           <Image
-            src="/Icarus300.png"
-            alt="Icarus"
+            src="/brand/icarus-figure.png"
+            alt="Icarus Technologies"
             width={28}
             height={28}
             className="h-full w-full object-cover"
           />
-        </div>
+        </a>
         <div className="hidden sm:block">
           <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Icarus Dashboard

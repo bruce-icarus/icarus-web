@@ -25,7 +25,7 @@ const TEAM = [
     role: 'Head of Catering',
     name: 'Bruce Williams',
     image: '/team/bruce-catering.png',
-    bio: 'Keeps the team fuelled. Specialises in meal deals and questionable microwave decisions.',
+    bio: "Keeps the team fuelled, don't ask about the food hygiene rating",
   },
 ]
 
